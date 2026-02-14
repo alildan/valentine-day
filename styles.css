@@ -288,11 +288,11 @@ h2 {
     pointer-events: none;
 }
 
-/* Secret answer: fixed at bottom center; scale grows with each Yes/No/secret click */
+/* Secret answer: fixed at bottom center; margin from bottom edge */
 .secret-answer {
     --secret-reveal-scale: 0.85;
     position: fixed;
-    bottom: 0;
+    bottom: max(24px, env(safe-area-inset-bottom));
     left: 50%;
     transform: translateX(-50%) scale(var(--secret-reveal-scale));
     margin: 0;
@@ -656,6 +656,7 @@ h2 {
     }
 
     .secret-answer {
+        bottom: max(20px, env(safe-area-inset-bottom));
         padding: 10px 12px;
         padding-bottom: max(10px, env(safe-area-inset-bottom));
     }
