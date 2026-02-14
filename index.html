@@ -11,6 +11,11 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Tap once to start music (required by Chrome); then this overlay disappears -->
+    <div class="music-tap-overlay" id="musicTapOverlay" aria-label="Tap to start">
+        <span class="music-tap-text">Tap to start 💝</span>
+    </div>
+
     <!-- Floating Background Elements -->
     <div class="floating-elements">
         <!-- Hearts and bears will be added here by JavaScript -->
@@ -21,7 +26,7 @@
         <h1 id="valentineTitle"></h1>
 
         <!-- Background music (no button - autoplay only) -->
-        <audio id="bgMusic" loop>
+        <audio id="bgMusic" loop preload="auto" playsinline>
             <source id="musicSource" type="audio/mpeg">
             Your browser does not support the audio element.
         </audio>
@@ -29,8 +34,8 @@
         <!-- First Question -->
         <div class="question-section" id="question1">
             <h2 id="question1Text"></h2>
-            <button class="cute-btn" onclick="revealSecretAnswer()" id="yesBtn1"></button>
-            <button class="cute-btn" onclick="moveButton(this); revealSecretAnswer();" id="noBtn1"></button>
+            <button class="cute-btn" onclick="startMusic(); revealSecretAnswer()" id="yesBtn1"></button>
+            <button class="cute-btn" onclick="startMusic(); moveButton(this); revealSecretAnswer();" id="noBtn1"></button>
         </div>
 
         <!-- Second Question (Love Meter) -->
@@ -67,7 +72,7 @@
 
     <!-- Secret answer: fixed at bottom center, grows when user taps Yes or No -->
     <div class="secret-answer" id="secretAnswer">
-        <button class="cute-btn special" onclick="revealSecretAnswer(); showNextQuestion(2);" id="secretAnswerBtn"></button>
+        <button class="cute-btn special" onclick="startMusic(); revealSecretAnswer(); showNextQuestion(2);" id="secretAnswerBtn"></button>
     </div>
 
     <!-- Scripts -->

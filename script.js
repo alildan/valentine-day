@@ -1,6 +1,9 @@
 // Initialize configuration
 const config = window.VALENTINE_CONFIG;
 
+// Define early so onclick never throws (setupMusicPlayer overwrites when music is enabled)
+window.startMusic = function () {};
+
 // Validate configuration
 function validateConfig() {
     const warnings = [];
@@ -318,36 +321,43 @@ function createHeartExplosion() {
     }
 }
 
-// Background music: browsers block autoplay until the user taps/clicks (e.g. Chrome, Safari).
-// We try autoplay on load; if blocked, we start music on first user interaction.
+// Background music: Chrome only allows play() in the same call stack as a user tap/click.
+// We show a "Tap to start" overlay; that first tap starts music so play() is in the gesture.
 function setupMusicPlayer() {
     const bgMusic = document.getElementById('bgMusic');
     const musicSource = document.getElementById('musicSource');
     if (!bgMusic || !musicSource) return;
-    if (!config.music.enabled) return;
+    if (!config.music.enabled) {
+        var o = document.getElementById('musicTapOverlay');
+        if (o) o.classList.add('hidden');
+        return;
+    }
 
     musicSource.src = config.music.musicUrl;
     bgMusic.volume = config.music.volume ?? 0.5;
     bgMusic.load();
 
+    let musicStarted = false;
     function tryPlay() {
-        const p = bgMusic.play();
-        if (p && p.catch) p.catch(() => {});
+        if (musicStarted) return;
+        musicStarted = true;
+        var p = bgMusic.play();
+        if (p && p.catch) p.catch(function () { musicStarted = false; });
     }
 
-    if (config.music.autoplay) {
-        tryPlay();
+    window.startMusic = tryPlay;
+
+    // Overlay: first tap starts music (play() runs in that tap) then overlay is removed
+    var overlay = document.getElementById('musicTapOverlay');
+    if (overlay) {
+        function onTap() {
+            tryPlay();
+            overlay.classList.add('hidden');
+        }
+        overlay.addEventListener('click', onTap, { once: true });
+        overlay.addEventListener('touchstart', onTap, { once: true, passive: true });
     }
 
-    // Start on first tap/click if autoplay was blocked (one-time only)
-    let started = false;
-    function startOnInteraction() {
-        if (started) return;
-        started = true;
-        tryPlay();
-        document.removeEventListener('click', startOnInteraction);
-        document.removeEventListener('touchstart', startOnInteraction, { passive: true });
-    }
-    document.addEventListener('click', startOnInteraction, { once: true });
-    document.addEventListener('touchstart', startOnInteraction, { once: true, passive: true });
+    document.addEventListener('click', tryPlay, { once: true, capture: true });
+    document.addEventListener('touchstart', tryPlay, { once: true, capture: true, passive: true });
 } 

@@ -19,6 +19,30 @@
     --heart-explosion-size: 1.5;
 }
 
+/* Tap overlay: first tap starts music (Chrome requirement), then it disappears */
+.music-tap-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 175, 189, 0.92);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+.music-tap-overlay.hidden {
+    display: none !important;
+}
+.music-tap-text {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(1.5rem, 5vw, 2.2rem);
+    color: var(--button-color);
+    font-weight: 700;
+    text-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+    pointer-events: none;
+}
+
 /* Reduced motion: tone down or disable animations */
 @media (prefers-reduced-motion: reduce) {
     :root {
